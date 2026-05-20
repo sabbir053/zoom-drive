@@ -1,9 +1,16 @@
+import AvailableCars from "@/components/AvailableCars";
+import Banner from "@/components/Banner";
+import WhyChooseUs from "@/components/WhyChooseUs";
+import PromoCTA from "../components/PromoCTA";
 
 export default function Home() {
   return (
     <div>
       <main>
-        <h1 className="text-4xl text-red-500">Welcome to My Next.js App!</h1>
+        <Banner />
+        <AvailableCars />
+        <WhyChooseUs />
+        <PromoCTA />
       </main>
     </div>
   );
