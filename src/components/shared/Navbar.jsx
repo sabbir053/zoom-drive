@@ -69,7 +69,7 @@ const Navbar = () => {
 
                 {/* লোগো টেক্সট */}
                 <Link href="/" className="btn btn-ghost text-xl font-black tracking-tight p-0 md:p-2">
-                    <span className="text-[#0A2540]">Drive</span><span className="text-[#FF6B00]">Fleet</span>
+                    <span className="text-[#0A2540]">Zoom</span><span className="text-[#FF6B00]">Drive</span>
                 </Link>
             </div>
 

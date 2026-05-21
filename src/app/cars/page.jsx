@@ -1,97 +1,47 @@
-"use client";
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
-// ডেটাবেজ থেকে আসা ডামি কার ডেটা লিস্ট
-const initialCarsData = [
-  {
-    _id: "car_01",
-    carModel: "Tesla Model 3",
-    carType: "Electric",
-    image: "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 85,
-    transmission: "Automatic",
-    fuelType: "Electric",
-    seatingCapacity: 5
-  },
-  {
-    _id: "car_02",
-    carModel: "Toyota RAV4",
-    carType: "SUV",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 60,
-    transmission: "Automatic",
-    fuelType: "Hybrid",
-    seatingCapacity: 5
-  },
-  {
-    _id: "car_03",
-    carModel: "BMW 5 Series",
-    carType: "Luxury",
-    image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 120,
-    transmission: "Automatic",
-    fuelType: "Octane",
-    seatingCapacity: 5
-  },
-  {
-    _id: "car_04",
-    carModel: "Ford Mustang GT",
-    carType: "Sports",
-    image: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 150,
-    transmission: "Manual",
-    fuelType: "Petrol",
-    seatingCapacity: 4
-  },
-  {
-    _id: "car_05",
-    carModel: "Hyundai Grand Starex",
-    carType: "Microbus",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 95,
-    transmission: "Automatic",
-    fuelType: "Diesel",
-    seatingCapacity: 11
-  },
-  {
-    _id: "car_06",
-    carModel: "Audi Q7",
-    carType: "SUV",
-    image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=80&w=600",
-    pricePerDay: 140,
-    transmission: "Automatic",
-    fuelType: "Octane",
-    seatingCapacity: 7
-  }
-];
+// Data Fetching Function
+const fetchCarsData = async () => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, {
+    cache: 'no-store' 
+  });
+  if (!res.ok) return [];
+  return res.json();
+};
 
-export default function ExploreCarsPage() {
-  // স্টেট ম্যানেজমেন্ট
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState('All');
-  const [selectedTransmission, setSelectedTransmission] = useState('All');
-  const [sortByPrice, setSortByPrice] = useState('default');
+const ExploreCarsPage = async ({ searchParams }) => {
+  
+  // Next.js 15+ standard onujayi searchParams await kora hoyeche
+  const params = await searchParams;
+  const searchQuery = params?.search || '';
+  const selectedType = params?.type || 'All';
+  const sortByPrice = params?.sort || 'default';
 
-  // রিয়েল-টাইম সার্চ এবং ফিল্টারিং লজিক
-  const filteredCars = initialCarsData
+  // Server-ey data fetch hocche
+  const carsData = await fetchCarsData();
+
+  // Data mapping onujayi fully safe search, filter ebong sorting logic
+  const filteredCars = carsData
     .filter((car) => {
-      const matchesSearch = car.carModel.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = selectedType === 'All' || car.carType === selectedType;
-      const matchesTrans = selectedTransmission === 'All' || car.transmission === selectedTransmission;
-      return matchesSearch && matchesType && matchesTrans;
+      // Real database entry logic
+      const matchesSearch = (car?.carName || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = selectedType === 'All' || car?.carType === selectedType;
+      
+      return matchesSearch && matchesType;
     })
     .sort((a, b) => {
-      if (sortByPrice === 'low-to-high') return a.pricePerDay - b.pricePerDay;
-      if (sortByPrice === 'high-to-low') return b.pricePerDay - a.pricePerDay;
-      return 0; // ডিফল্ট অর্ডার
+      // Real price key: dailyPrice
+      if (sortByPrice === 'low-to-high') return (a?.dailyPrice || 0) - (b?.dailyPrice || 0);
+      if (sortByPrice === 'high-to-low') return (b?.dailyPrice || 0) - (a?.dailyPrice || 0);
+      return 0;
     });
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 text-gray-800">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
-        {/* Page Header */}
+        {/* Top Header */}
         <div className="mb-10 text-center lg:text-left space-y-2">
           <h1 className="text-3xl md:text-4xl font-black text-[#0A2540]">
             Explore Our <span className="text-[#FF6B00]">Premium Fleet</span>
@@ -101,59 +51,44 @@ export default function ExploreCarsPage() {
           </p>
         </div>
 
-        {/* Dynamic Interactive Filter & Search Bar Panel */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+        {/* 
+          FILTER FORM (Fixed design breaking gap and sizing layout)
+        */}
+        <form action="/cars" method="GET" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
           
-          {/* Search Input widget */}
-          <div className="form-control w-full">
-            <label className="label py-1"><span className="label-text font-bold text-gray-500 text-xs">Search Car Model</span></label>
+          <div className="w-full">
+            <label className="block mb-1 text-gray-500 font-bold text-xs">Search Car Model</label>
             <input 
               type="text" 
-              placeholder="e.g. Tesla, Toyota..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input input-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+              name="search"
+              placeholder="e.g. Toyota, Honda..." 
+              defaultValue={searchQuery}
+              className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50"
             />
           </div>
 
-          {/* Car Type Filter */}
-          <div className="form-control w-full">
-            <label className="label py-1"><span className="label-text font-bold text-gray-500 text-xs">Filter by Type</span></label>
+          {/* Database updated exact value based Dropdown Categories */}
+          <div className="w-full">
+            <label className="block mb-1 text-gray-500 font-bold text-xs">Filter by Type</label>
             <select 
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+              name="type"
+              defaultValue={selectedType}
+              className="select select-bordered w-full h-11 min-h-0 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50"
             >
               <option value="All">All Categories</option>
               <option value="SUV">SUV</option>
+              <option value="Sedan">Sedan</option>
+              <option value="Hatchback">Hatchback</option>
               <option value="Luxury">Luxury</option>
-              <option value="Electric">Electric</option>
-              <option value="Sports">Sports</option>
-              <option value="Microbus">Microbus</option>
             </select>
           </div>
 
-          {/* Transmission Filter */}
-          <div className="form-control w-full">
-            <label className="label py-1"><span className="label-text font-bold text-gray-500 text-xs">Transmission</span></label>
+          <div className="w-full">
+            <label className="block mb-1 text-gray-500 font-bold text-xs">Sort by Price</label>
             <select 
-              value={selectedTransmission}
-              onChange={(e) => setSelectedTransmission(e.target.value)}
-              className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
-            >
-              <option value="All">All Transmissions</option>
-              <option value="Automatic">Automatic</option>
-              <option value="Manual">Manual</option>
-            </select>
-          </div>
-
-          {/* Price Sorting */}
-          <div className="form-control w-full">
-            <label className="label py-1"><span className="label-text font-bold text-gray-500 text-xs">Sort by Price</span></label>
-            <select 
-              value={sortByPrice}
-              onChange={(e) => setSortByPrice(e.target.value)}
-              className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+              name="sort"
+              defaultValue={sortByPrice}
+              className="select select-bordered w-full h-11 min-h-0 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50"
             >
               <option value="default">Default Features</option>
               <option value="low-to-high">Price: Low to High</option>
@@ -161,82 +96,83 @@ export default function ExploreCarsPage() {
             </select>
           </div>
 
-        </div>
+          {/* Fixed standalone layout grid button system */}
+          <div className="w-full md:col-span-3 lg:col-span-1">
+            <button type="submit" className="btn bg-[#0A2540] text-white hover:bg-[#FF6B00] border-none h-11 min-h-0 w-full font-bold shadow-sm transition-colors duration-200">
+              Apply Filters
+            </button>
+          </div>
 
-        {/* Results Info Counter */}
+        </form>
+
         <div className="mb-6 text-sm font-semibold text-gray-500">
           Showing {filteredCars.length} {filteredCars.length === 1 ? 'car' : 'cars'} available for booking
         </div>
 
-        {/* Empty State Layout if no cars match search criteria */}
+        {/* NO CARS FOUND */}
         {filteredCars.length === 0 && (
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-4">
             <div className="text-5xl">🔍</div>
             <h3 className="text-xl font-bold text-[#0A2540]">No Cars Found Matching Your Criteria</h3>
             <p className="text-sm text-gray-400 max-w-md mx-auto">Try resetting your search query or picking a different vehicle category filter.</p>
-            <button 
-              onClick={() => { setSearchQuery(''); setSelectedType('All'); setSelectedTransmission('All'); setSortByPrice('default'); }}
-              className="btn btn-sm text-white bg-[#0A2540] hover:bg-[#FF6B00] border-none px-6 mt-2"
+            <Link 
+              href="/cars" 
+              className="btn bg-[#0A2540] hover:bg-[#FF6B00] text-white border-none px-6 inline-flex items-center justify-center h-10 mt-2 font-bold rounded-lg"
             >
               Reset All Filters
-            </button>
+            </Link>
           </div>
         )}
 
-        {/* Active Grid View Layout */}
+        {/* CARS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCars.map((car) => (
             <div 
               key={car._id} 
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col justify-between group"
             >
-              {/* Image Segment */}
               <div className="relative w-full aspect-[16/10] bg-gray-100 overflow-hidden">
-                <span className="absolute top-4 left-4 z-10 bg-emerald-500 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-sm">
-                  Available
+                <span className={`absolute top-4 left-4 z-10 text-white text-[11px] font-bold uppercase px-3 py-1 rounded-md shadow-sm ${car.availabilityStatus === 'Available' ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                  {car.availabilityStatus}
                 </span>
                 <img 
-                  src={car.image} 
-                  alt={car.carModel}
+                  src={car.imageUrl} 
+                  alt={car.carName}
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute bottom-4 right-4 bg-[#0A2540] text-white px-3 py-1.5 rounded-lg font-bold text-sm shadow-md">
-                  <span className="text-[#FF6B00] text-lg">${car.pricePerDay}</span> / day
+                  <span className="text-[#FF6B00] text-lg">৳{car.dailyPrice}</span> / day
                 </div>
               </div>
 
-              {/* Specification Specs Content */}
               <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
                     {car.carType} Category
                   </span>
                   <h3 className="text-xl font-bold text-[#0A2540] group-hover:text-[#FF6B00] transition-colors duration-200">
-                    {car.carModel}
+                    {car.carName}
                   </h3>
+                  <p className="text-xs text-gray-400 line-clamp-2 mt-1">{car.description}</p>
                 </div>
 
-                {/* Sub Features Indicators Row */}
-                <div className="grid grid-cols-3 gap-2 py-3 border-y border-gray-100 text-center text-xs font-medium text-gray-600">
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase">Gear</p>
-                    <p className="font-bold text-gray-700 mt-0.5">{car.transmission}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase">Fuel</p>
-                    <p className="font-bold text-gray-700 mt-0.5">{car.fuelType}</p>
-                  </div>
+                <div className="grid grid-cols-2 gap-2 py-3 border-y border-gray-100 text-center text-xs font-medium text-gray-600">
                   <div>
                     <p className="text-[10px] text-gray-400 uppercase">Capacity</p>
-                    <p className="font-bold text-gray-700 mt-0.5">{car.seatingCapacity} Seater</p>
+                    <p className="font-bold text-gray-700 mt-0.5">{car.seatCapacity} Seater</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 uppercase">Location</p>
+                    <p className="font-bold text-gray-700 mt-0.5 truncate px-1" title={car.pickupLocation}>
+                      {car.pickupLocation?.split(',')[0]}
+                    </p>
                   </div>
                 </div>
 
-                {/* Action Redirect Route Button */}
                 <div className="pt-2">
                   <Link 
                     href={`/cars/${car._id}`}
-                    className="btn w-full bg-[#0A2540] hover:bg-[#FF6B00] text-white border-none font-bold transition-all duration-300 shadow-md"
+                    className="btn w-full bg-[#0A2540] hover:bg-[#FF6B00] text-white border-none font-bold transition-all duration-300 shadow-md text-center flex items-center justify-center h-12 rounded-xl"
                   >
                     View Details ➔
                   </Link>
@@ -249,4 +185,6 @@ export default function ExploreCarsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ExploreCarsPage;
