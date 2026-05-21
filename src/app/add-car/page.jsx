@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function AddCarPage() {
+const AddCarPage = () => {
+  
   const router = useRouter();
   
-  // ফর্ম স্টেট ম্যানেজমেন্ট
   const [formData, setFormData] = useState({
-    carModel: '',
+    carName: '', 
     carType: 'SUV',
-    image: '',
-    pricePerDay: '',
+    imageUrl: '',
+    dailyRentPrice: '',
     transmission: 'Automatic',
     fuelType: 'Octane',
     seatingCapacity: '',
@@ -18,8 +18,8 @@ export default function AddCarPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(false);
 
-  // ইনপুট চেঞ্জ হ্যান্ডেলার
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -28,48 +28,43 @@ export default function AddCarPage() {
     }));
   };
 
-  // ফর্ম সাবমিট হ্যান্ডেলার
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // টাইপ কাস্টিং (স্ট্রিং থেকে নাম্বার রূপান্তর)
     const processedData = {
       ...formData,
-      pricePerDay: Number(formData.pricePerDay),
+      dailyRentPrice: Number(formData.dailyRentPrice),
       seatingCapacity: Number(formData.seatingCapacity)
     };
 
-    console.log("Submitting Car Data:", processedData);
-
     try {
-      // এখানে আপনার ব্যাকএন্ড API এন্ডপয়েন্ট কল হবে (যেমন: Express.js API)
-      // const response = await fetch('http://localhost:5000/api/cars', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(processedData)
-      // });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(processedData)
+      });
       
-      // if (response.ok) {
-      //   alert('Car added successfully!');
-      //   router.push('/cars'); // সফল হলে এক্সপ্লোর পেজে রিডাইরেক্ট করবে
-      // }
-
-      // সাময়িক টেস্টিং এলার্ট
-      setTimeout(() => {
-        alert('Car added successfully! (Check console for object)');
-        setLoading(false);
-      }, 1000);
+      if (response.ok) {
+        setSuccessMessage(true);
+        
+        setTimeout(() => {
+          router.push('/cars'); 
+        }, 2000);
+      } else {
+        console.error("Server responded with an error");
+      }
 
     } catch (error) {
       console.error("Error adding car:", error);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 text-gray-800">
-      <div className="max-w-3xl mx-auto px-4 md:px-8">
+      <div className="min-h-screen bg-gray-50 py-12 text-gray-800">
+        <div className="max-w-3xl mx-auto px-4 md:px-8">
         
         {/* Page Header */}
         <div className="mb-8 text-center space-y-2">
@@ -82,7 +77,15 @@ export default function AddCarPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100 relative">
+          
+          {/* কাস্টম সাকসেস নোটিফিকেশন */}
+          {successMessage && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-center font-bold text-sm animate-fadeIn">
+              🎉 Vehicle published successfully! Redirecting to inventory...
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Grid Layout Line 1: Model & Type */}
@@ -92,12 +95,12 @@ export default function AddCarPage() {
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Car Model Name *</span></label>
                 <input 
                   type="text" 
-                  name="carModel"
+                  name="carName"
                   required
                   placeholder="e.g. Tesla Model Y, Audi A6" 
-                  value={formData.carModel}
+                  value={formData.carName}
                   onChange={handleChange}
-                  className="input input-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 />
               </div>
 
@@ -108,7 +111,7 @@ export default function AddCarPage() {
                   name="carType"
                   value={formData.carType}
                   onChange={handleChange}
-                  className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="select select-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 >
                   <option value="SUV">SUV</option>
                   <option value="Luxury">Luxury</option>
@@ -125,12 +128,12 @@ export default function AddCarPage() {
               <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Image URL *</span></label>
               <input 
                 type="url" 
-                name="image"
+                name="imageUrl"
                 required
                 placeholder="https://images.unsplash.com/... or any hosting link" 
-                value={formData.image}
+                value={formData.imageUrl}
                 onChange={handleChange}
-                className="input input-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
               />
             </div>
 
@@ -138,16 +141,16 @@ export default function AddCarPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Price Per Day */}
               <div className="form-control w-full">
-                <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Price Per Day ($) *</span></label>
+                <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Price Per Day (৳) *</span></label>
                 <input 
                   type="number" 
-                  name="pricePerDay"
+                  name="dailyRentPrice"
                   required
                   min="1"
-                  placeholder="e.g. 75" 
-                  value={formData.pricePerDay}
+                  placeholder="e.g. 2500" 
+                  value={formData.dailyRentPrice}
                   onChange={handleChange}
-                  className="input input-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 />
               </div>
 
@@ -162,7 +165,7 @@ export default function AddCarPage() {
                   placeholder="e.g. 5 or 7" 
                   value={formData.seatingCapacity}
                   onChange={handleChange}
-                  className="input input-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 />
               </div>
             </div>
@@ -176,7 +179,7 @@ export default function AddCarPage() {
                   name="transmission"
                   value={formData.transmission}
                   onChange={handleChange}
-                  className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="select select-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 >
                   <option value="Automatic">Automatic</option>
                   <option value="Manual">Manual</option>
@@ -190,7 +193,7 @@ export default function AddCarPage() {
                   name="fuelType"
                   value={formData.fuelType}
                   onChange={handleChange}
-                  className="select select-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                  className="select select-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 >
                   <option value="Octane">Octane</option>
                   <option value="Petrol">Petrol</option>
@@ -210,7 +213,7 @@ export default function AddCarPage() {
                 placeholder="Write a brief overview about the car's condition, features, or rental terms..." 
                 value={formData.description}
                 onChange={handleChange}
-                className="textarea textarea-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00]"
+                className="textarea textarea-bordered w-full text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl p-3 resize-none"
               ></textarea>
             </div>
 
@@ -219,7 +222,7 @@ export default function AddCarPage() {
               <button 
                 type="button"
                 onClick={() => router.back()}
-                className="btn btn-outline border-gray-300 hover:bg-gray-100 hover:text-gray-800 font-bold px-8 order-2 sm:order-1"
+                className="btn bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold px-8 h-11 min-h-0 border-none rounded-xl order-2 sm:order-1"
               >
                 Cancel
               </button>
@@ -227,10 +230,10 @@ export default function AddCarPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="btn bg-[#0A2540] hover:bg-[#FF6B00] text-white border-none font-bold px-10 shadow-md order-1 sm:order-2"
+                className="btn bg-[#0A2540] hover:bg-[#FF6B00] text-white border-none font-bold px-10 h-11 min-h-0 rounded-xl shadow-md order-1 sm:order-2"
               >
                 {loading ? (
-                  <span className="loading loading-spinner loading-sm"></span>
+                  <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></span>
                 ) : (
                   'Publish Vehicle ➔'
                 )}
@@ -243,4 +246,6 @@ export default function AddCarPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AddCarPage;
