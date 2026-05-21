@@ -10,7 +10,7 @@ const AddCarPage = () => {
     carName: '', 
     carType: 'SUV',
     imageUrl: '',
-    dailyRentPrice: '',
+    dailyPrice: '', // ১. পরিবর্তন: dailyRentPrice থেকে dailyPrice করা হলো
     transmission: 'Automatic',
     fuelType: 'Octane',
     seatingCapacity: '',
@@ -30,11 +30,11 @@ const AddCarPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    loading=true; // setLoading(true) এর পরিবর্তে state management logic
 
     const processedData = {
       ...formData,
-      dailyRentPrice: Number(formData.dailyRentPrice),
+      dailyPrice: Number(formData.dailyPrice), // ২. পরিবর্তন: এখানেও dailyPrice কনভার্ট হবে
       seatingCapacity: Number(formData.seatingCapacity)
     };
 
@@ -144,11 +144,11 @@ const AddCarPage = () => {
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Price Per Day (৳) *</span></label>
                 <input 
                   type="number" 
-                  name="dailyRentPrice"
+                  name="dailyPrice" // ৩. পরিবর্তন: ইনপুটের name প্রপার্টি dailyPrice করা হলো
                   required
                   min="1"
                   placeholder="e.g. 2500" 
-                  value={formData.dailyRentPrice}
+                  value={formData.dailyPrice} // ৪. পরিবর্তন: ভ্যালু ট্র্যাকিং dailyPrice দিয়ে হবে
                   onChange={handleChange}
                   className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 />
