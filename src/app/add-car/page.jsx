@@ -10,7 +10,7 @@ const AddCarPage = () => {
     carName: '', 
     carType: 'SUV',
     imageUrl: '',
-    dailyPrice: '', // ১. পরিবর্তন: dailyRentPrice থেকে dailyPrice করা হলো
+    dailyPrice: '',
     transmission: 'Automatic',
     fuelType: 'Octane',
     seatingCapacity: '',
@@ -30,11 +30,11 @@ const AddCarPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    loading=true; // setLoading(true) এর পরিবর্তে state management logic
+    loading=true;
 
     const processedData = {
       ...formData,
-      dailyPrice: Number(formData.dailyPrice), // ২. পরিবর্তন: এখানেও dailyPrice কনভার্ট হবে
+      dailyPrice: Number(formData.dailyPrice),
       seatingCapacity: Number(formData.seatingCapacity)
     };
 
@@ -66,7 +66,6 @@ const AddCarPage = () => {
       <div className="min-h-screen bg-gray-50 py-12 text-gray-800">
         <div className="max-w-3xl mx-auto px-4 md:px-8">
         
-        {/* Page Header */}
         <div className="mb-8 text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-black text-[#0A2540]">
             Add a New <span className="text-[#FF6B00]">Vehicle</span>
@@ -76,21 +75,17 @@ const AddCarPage = () => {
           </p>
         </div>
 
-        {/* Form Container */}
         <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100 relative">
           
-          {/* কাস্টম সাকসেস নোটিফিকেশন */}
           {successMessage && (
             <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-center font-bold text-sm animate-fadeIn">
-              🎉 Vehicle published successfully! Redirecting to inventory...
+              Vehicle published successfully! Redirecting to inventory...
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Grid Layout Line 1: Model & Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Car Model Input */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Car Model Name *</span></label>
                 <input 
@@ -104,7 +99,6 @@ const AddCarPage = () => {
                 />
               </div>
 
-              {/* Car Type Dropdown */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Car Category *</span></label>
                 <select 
@@ -123,7 +117,6 @@ const AddCarPage = () => {
               </div>
             </div>
 
-            {/* Image URL Input */}
             <div className="form-control w-full">
               <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Image URL *</span></label>
               <input 
@@ -137,24 +130,21 @@ const AddCarPage = () => {
               />
             </div>
 
-            {/* Grid Layout Line 2: Price & Capacity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Price Per Day */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Price Per Day (৳) *</span></label>
                 <input 
                   type="number" 
-                  name="dailyPrice" // ৩. পরিবর্তন: ইনপুটের name প্রপার্টি dailyPrice করা হলো
+                  name="dailyPrice"
                   required
                   min="1"
                   placeholder="e.g. 2500" 
-                  value={formData.dailyPrice} // ৪. পরিবর্তন: ভ্যালু ট্র্যাকিং dailyPrice দিয়ে হবে
+                  value={formData.dailyPrice}
                   onChange={handleChange}
                   className="input input-bordered w-full h-11 text-sm focus:outline-none focus:border-[#FF6B00] bg-gray-50 rounded-xl px-4"
                 />
               </div>
 
-              {/* Seating Capacity */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Seating Capacity *</span></label>
                 <input 
@@ -170,9 +160,7 @@ const AddCarPage = () => {
               </div>
             </div>
 
-            {/* Grid Layout Line 3: Transmission & Fuel */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Transmission Dropdown */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Transmission *</span></label>
                 <select 
@@ -186,7 +174,6 @@ const AddCarPage = () => {
                 </select>
               </div>
 
-              {/* Fuel Type Dropdown */}
               <div className="form-control w-full">
                 <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Fuel Type *</span></label>
                 <select 
@@ -204,7 +191,6 @@ const AddCarPage = () => {
               </div>
             </div>
 
-            {/* Description Textarea */}
             <div className="form-control w-full">
               <label className="label"><span className="label-text font-bold text-gray-600 text-sm">Car Description (Optional)</span></label>
               <textarea 
@@ -217,7 +203,6 @@ const AddCarPage = () => {
               ></textarea>
             </div>
 
-            {/* Submit Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-end">
               <button 
                 type="button"

@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 const Navbar = () => {
     const pathname = usePathname();
 
-    // অথেন্টিকেশন স্টেট (আপনার প্রজেক্টের রিয়েল কন্টেক্সট বা ইউজার স্টেট এখানে বসবে)
     const user = {
         name: "Mohammad Sabbir Hosen",
         email: "sabbir@example.com",
@@ -67,7 +66,6 @@ const Navbar = () => {
                     </ul>
                 </div>
 
-                {/* লোগো টেক্সট */}
                 <Link href="/" className="btn btn-ghost text-xl font-black tracking-tight p-0 md:p-2">
                     <span className="text-[#0A2540]">Zoom</span><span className="text-[#FF6B00]">Drive</span>
                 </Link>
@@ -89,7 +87,6 @@ const Navbar = () => {
                         </div>
 
                         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-3 shadow-xl bg-white rounded-box w-56 border border-gray-200 gap-1">
-                            {/* রেসপনসিভ ইউজার প্রোফাইল ইনফো সেকশন */}
                             <li className="px-3 py-2 border-b border-gray-200 mb-1 pointer-events-none flex flex-col items-start gap-0.5">
                                 <span className="font-bold text-[#0A2540] block w-full truncate text-sm">{user.name}</span>
                                 <span className="text-xs text-gray-500 block w-full truncate">{user.email}</span>

@@ -1,24 +1,19 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-// Icons: React Icons (Heroicons 2 এবং Font Awesome 6)
 import { HiOutlineTrash, HiOutlineEye, HiOutlineCalendar, HiMiniFunnel } from "react-icons/hi2";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
 
 const MyBookingsPage = () => {
-    // স্টেটস
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     
-    // ডিলিট বা ক্যান্সেল মোডাল স্টেট
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [processingDelete, setProcessingDelete] = useState(false);
 
-    // ১. ডাটা ফেচিং (ইউজারের নিজস্ব বুকিং ডাটা)
     useEffect(() => {
         const fetchMyBookings = async () => {
             try {
-                // এখানে আপনার সিকিউর এপিআই ইন্টিগ্রেশন কুঁড়ি (JWT cookie এর মাধ্যমে ব্যাকএন্ডে ইউজার ট্র্যাক হবে)
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-bookings`, {
                     headers: {
                         'Content-Type': 'application/json'
@@ -38,7 +33,6 @@ const MyBookingsPage = () => {
         fetchMyBookings();
     }, []);
 
-    // ২. বুকিং ডিলিট/ক্যান্সেল হ্যান্ডলার
     const handleCancelClick = (id) => {
         setSelectedBookingId(id);
         setDeleteModalOpen(true);
@@ -54,7 +48,6 @@ const MyBookingsPage = () => {
             });
             
             if (res.ok) {
-                // সফলভাবে ডিলিট হলে স্টেট আপডেট করে লিস্ট থেকে সরিয়ে দেওয়া
                 setBookings(prev => prev.filter(booking => booking._id !== selectedBookingId));
             }
         } catch (error) {
@@ -66,7 +59,6 @@ const MyBookingsPage = () => {
         }
     };
 
-    // রিকোয়ারমেন্ট অনুযায়ী লোডিং স্পিনার ট্র্যাকিং
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -75,7 +67,6 @@ const MyBookingsPage = () => {
         );
     }
 
-    // কুইক স্ট্যাট ক্যালকুলেশন
     const totalSpend = bookings.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
     const activeTrips = bookings.filter(item => item.status !== 'Completed' && item.status !== 'Cancelled').length;
 
@@ -83,7 +74,6 @@ const MyBookingsPage = () => {
         <div className="min-h-screen bg-gray-50 py-12 text-gray-800 font-sans">
             <div className="max-w-6xl mx-auto px-4 md:px-8 space-y-8">
 
-                {/* Header Block with Dynamic Stats */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-gray-200 pb-6">
                     <div>
                         <h1 className="text-3xl font-black text-[#0A2540] tracking-tight">
@@ -94,7 +84,6 @@ const MyBookingsPage = () => {
                         </p>
                     </div>
 
-                    {/* Quick Stats Cards */}
                     <div className="flex gap-4">
                         <div className="bg-white border border-gray-200 rounded-xl p-4 min-w-[130px] shadow-sm">
                             <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Spend</p>
@@ -107,7 +96,6 @@ const MyBookingsPage = () => {
                     </div>
                 </div>
 
-                {/* Filter Bar */}
                 <div className="flex justify-end items-center gap-3">
                     <div className="flex items-center text-gray-500 gap-1.5 text-sm font-bold">
                         <HiMiniFunnel size={16} /> Filter Status:
@@ -116,7 +104,6 @@ const MyBookingsPage = () => {
                         <select
                             className="appearance-none bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 py-2 pl-3 pr-10 focus:outline-none shadow-sm focus:border-[#FF6B00]"
                             onChange={(e) => {
-                                // অপশনাল এক্সট্রা ফিল্টার চাইলে যোগ করতে পারেন
                             }}
                         >
                             <option value="all">All Bookings</option>
@@ -129,7 +116,6 @@ const MyBookingsPage = () => {
                     </div>
                 </div>
 
-                {/* Responsive Table Layout */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                     {bookings.length === 0 ? (
                         <div className="p-12 text-center text-gray-500">
@@ -159,7 +145,6 @@ const MyBookingsPage = () => {
                                 <tbody className="divide-y divide-gray-100 text-sm font-medium text-gray-700">
                                     {bookings.map((booking) => (
                                         <tr key={booking._id} className="hover:bg-gray-50/50 transition-colors">
-                                            {/* Vehicle Details */}
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-4">
                                                     <img
@@ -174,7 +159,6 @@ const MyBookingsPage = () => {
                                                 </div>
                                             </td>
 
-                                            {/* Booking Date */}
                                             <td className="py-4 px-6">
                                                 <div className="flex flex-col">
                                                     <span className="text-gray-900 font-bold">
@@ -184,7 +168,6 @@ const MyBookingsPage = () => {
                                                 </div>
                                             </td>
 
-                                            {/* Total Price */}
                                             <td className="py-4 px-6">
                                                 <div className="flex flex-col">
                                                     <span className="text-base font-black text-[#0A2540]">৳{booking.totalPrice}</span>
@@ -192,7 +175,6 @@ const MyBookingsPage = () => {
                                                 </div>
                                             </td>
 
-                                            {/* Driver Required or Not */}
                                             <td className="py-4 px-6">
                                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${
                                                     booking.driverNeeded === 'Yes' 
@@ -203,7 +185,6 @@ const MyBookingsPage = () => {
                                                 </span>
                                             </td>
 
-                                            {/* Actions Button */}
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center justify-center gap-3">
                                                     <button 
@@ -225,15 +206,9 @@ const MyBookingsPage = () => {
                 </div>
             </div>
 
-            {/* ---------------------------------------------------- */}
-            {/* CUSTOM CONFIRMATION MODAL (No default alert rule) */}
-            {/* ---------------------------------------------------- */}
             {deleteModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-gray-100 space-y-4 text-center">
-                        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-500 text-xl font-bold">
-                            ⚠️
-                        </div>
                         <div>
                             <h3 className="text-lg font-bold text-[#0A2540]">Cancel Booking?</h3>
                             <p className="text-xs text-gray-500 mt-1 leading-relaxed">

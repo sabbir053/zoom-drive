@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 
-// Data Fetching Function
 const fetchCarsData = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, {
     cache: 'no-store' 
@@ -12,26 +11,21 @@ const fetchCarsData = async () => {
 
 const ExploreCarsPage = async ({ searchParams }) => {
   
-  // Next.js 15+ standard onujayi searchParams await kora hoyeche
   const params = await searchParams;
   const searchQuery = params?.search || '';
   const selectedType = params?.type || 'All';
   const sortByPrice = params?.sort || 'default';
 
-  // Server-ey data fetch hocche
   const carsData = await fetchCarsData();
 
-  // Data mapping onujayi fully safe search, filter ebong sorting logic
   const filteredCars = carsData
     .filter((car) => {
-      // Real database entry logic
       const matchesSearch = (car?.carName || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = selectedType === 'All' || car?.carType === selectedType;
       
       return matchesSearch && matchesType;
     })
     .sort((a, b) => {
-      // Real price key: dailyPrice
       if (sortByPrice === 'low-to-high') return (a?.dailyPrice || 0) - (b?.dailyPrice || 0);
       if (sortByPrice === 'high-to-low') return (b?.dailyPrice || 0) - (a?.dailyPrice || 0);
       return 0;
@@ -41,7 +35,6 @@ const ExploreCarsPage = async ({ searchParams }) => {
     <div className="min-h-screen bg-gray-50 py-12 text-gray-800">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
-        {/* Top Header */}
         <div className="mb-10 text-center lg:text-left space-y-2">
           <h1 className="text-3xl md:text-4xl font-black text-[#0A2540]">
             Explore Our <span className="text-[#FF6B00]">Premium Fleet</span>
@@ -51,9 +44,7 @@ const ExploreCarsPage = async ({ searchParams }) => {
           </p>
         </div>
 
-        {/* 
-          FILTER FORM (Fixed design breaking gap and sizing layout)
-        */}
+        
         <form action="/cars" method="GET" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
           
           <div className="w-full">
@@ -67,7 +58,6 @@ const ExploreCarsPage = async ({ searchParams }) => {
             />
           </div>
 
-          {/* Database updated exact value based Dropdown Categories */}
           <div className="w-full">
             <label className="block mb-1 text-gray-500 font-bold text-xs">Filter by Type</label>
             <select 
@@ -96,7 +86,6 @@ const ExploreCarsPage = async ({ searchParams }) => {
             </select>
           </div>
 
-          {/* Fixed standalone layout grid button system */}
           <div className="w-full md:col-span-3 lg:col-span-1">
             <button type="submit" className="btn bg-[#0A2540] text-white hover:bg-[#FF6B00] border-none h-11 min-h-0 w-full font-bold shadow-sm transition-colors duration-200">
               Apply Filters
@@ -109,7 +98,6 @@ const ExploreCarsPage = async ({ searchParams }) => {
           Showing {filteredCars.length} {filteredCars.length === 1 ? 'car' : 'cars'} available for booking
         </div>
 
-        {/* NO CARS FOUND */}
         {filteredCars.length === 0 && (
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-4">
             <div className="text-5xl">🔍</div>
@@ -124,7 +112,6 @@ const ExploreCarsPage = async ({ searchParams }) => {
           </div>
         )}
 
-        {/* CARS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCars.map((car) => (
             <div 

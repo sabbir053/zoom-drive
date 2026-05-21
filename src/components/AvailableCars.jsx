@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 
-// Data Fetching Function
 const fetchCarsData = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/availablecars`, {
     cache: 'no-store' 
@@ -20,7 +19,6 @@ const AvailableCars = async () => {
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
 
-        {/* Top Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-3">
           <span className="text-[#FF6B00] text-xs md:text-sm font-extrabold uppercase tracking-widest bg-[#FF6B00]/10 px-4 py-1.5 rounded-full inline-block">
             Our Fleet

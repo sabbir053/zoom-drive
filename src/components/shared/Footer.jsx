@@ -10,7 +10,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           
-          {/* Column 1: Brand */}
           <div className="space-y-4">
             <Link href="/" className="text-2xl font-black tracking-tight text-white">
               Drive<span className="text-[#FF6B00]">Fleet</span>
@@ -20,7 +19,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Useful Links (অরেঞ্জ হোভার ও বর্ডার) */}
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs border-l-2 border-[#FF6B00] pl-2">Useful Links</h4>
             <ul className="space-y-2.5 text-sm">
@@ -31,7 +29,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Contact Info (অরেঞ্জ আইকন) */}
           <div className="space-y-3">
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs border-l-2 border-[#FF6B00] pl-2">Contact Info</h4>
             <div className="flex items-start gap-3 text-sm text-slate-400">
@@ -48,7 +45,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 4: Social (সার্কেল ব্যাকগ্রাউন্ড ও অরেঞ্জ হোভার) */}
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs border-l-2 border-[#FF6B00] pl-2">Follow Us</h4>
             <div className="flex items-center gap-3">
