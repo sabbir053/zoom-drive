@@ -28,13 +28,47 @@ const AddCarPage = () => {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   loading=true;
+
+  //   const processedData = {
+  //     ...formData,
+  //     dailyPrice: Number(formData.dailyPrice),
+  //     seatingCapacity: Number(formData.seatingCapacity)
+  //   };
+
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(processedData)
+  //     });
+      
+  //     if (response.ok) {
+  //       setSuccessMessage(true);
+        
+  //       setTimeout(() => {
+  //         router.push('/cars'); 
+  //       }, 2000);
+  //     } else {
+  //       console.error("Server responded with an error");
+  //     }
+
+  //   } catch (error) {
+  //     console.error("Error adding car:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    loading=true;
+    setLoading(true); // ঠিক করা হয়েছে
 
     const processedData = {
       ...formData,
-      dailyPrice: Number(formData.dailyPrice),
+      dailyPrice: Number(formData.dailyPrice), 
       seatingCapacity: Number(formData.seatingCapacity)
     };
 

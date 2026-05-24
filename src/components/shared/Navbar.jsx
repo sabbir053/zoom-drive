@@ -1,20 +1,25 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { authClient } from "@/lib/auth-client";
 
 const Navbar = () => {
     const pathname = usePathname();
+    const router = useRouter();
 
-    const user = {
-        name: "Mohammad Sabbir Hosen",
-        email: "sabbir@example.com",
-        photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop"
-    };
+    const { data: session, isPending } = authClient.useSession();
+    const user = session?.user;
 
-    const handleLogout = () => {
-        console.log("Logged out");
-        closeDropdown();
+    const handleLogout = async () => {
+        try {
+            await authClient.signOut();
+            closeDropdown();
+            router.push("/");
+            router.refresh();
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
 
     const closeDropdown = () => {
@@ -35,6 +40,7 @@ const Navbar = () => {
                     Explore Cars
                 </Link>
             </li>
+
             {user && (
                 <>
                     <li>
@@ -78,11 +84,17 @@ const Navbar = () => {
             </div>
 
             <div className="navbar-end">
-                {user ? (
+                {isPending ? (
+                    <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+                ) : user ? (
                     <div className="dropdown dropdown-end">
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border border-[#FF6B00]/20 hover:border-[#FF6B00] transition-all duration-200">
-                            <div className="w-10 rounded-full">
-                                <img alt={user.name} src={user.photoURL} />
+                            <div className="w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                {user.image ? (
+                                    <img alt={user.name} src={user.image} />
+                                ) : (
+                                    <span className="font-bold text-[#0A2540]">{user.name?.charAt(0).toUpperCase()}</span>
+                                )}
                             </div>
                         </div>
 
@@ -91,9 +103,9 @@ const Navbar = () => {
                                 <span className="font-bold text-[#0A2540] block w-full truncate text-sm">{user.name}</span>
                                 <span className="text-xs text-gray-500 block w-full truncate">{user.email}</span>
                             </li>
+                            <li><Link href="/cars" onClick={closeDropdown} className="text-[#0A2540] hover:text-[#FF6B00]">Explore Cars</Link></li>
                             <li><Link href="/add-car" onClick={closeDropdown} className="text-[#0A2540] hover:text-[#FF6B00]">Add Car</Link></li>
                             <li><Link href="/my-bookings" onClick={closeDropdown} className="text-[#0A2540] hover:text-[#FF6B00]">My Bookings</Link></li>
-                            <li><Link href="/my-added-cars" onClick={closeDropdown} className="text-[#0A2540] hover:text-[#FF6B00]">My Added Cars</Link></li>
                             <li className="mt-2 pt-2 border-t border-gray-200">
                                 <button onClick={handleLogout} className="btn btn-sm btn-error btn-outline w-full text-left justify-start">
                                     Logout
@@ -102,7 +114,10 @@ const Navbar = () => {
                         </ul>
                     </div>
                 ) : (
-                    <Link href="/login" className="btn text-white btn-sm md:btn-md font-bold px-6 shadow-md border-none bg-[#FF6B00] hover:bg-[#E05E00]">
+                    <Link
+                        href="/login"
+                        className="inline-flex items-center justify-center text-white font-bold px-6 h-10 text-sm shadow-md border-none bg-[#FF6B00] hover:bg-[#E05E00] rounded-xl transition-all duration-300"
+                    >
                         Login
                     </Link>
                 )}
